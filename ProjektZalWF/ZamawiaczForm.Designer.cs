@@ -137,21 +137,21 @@ namespace ProjektZalWF
             this.wszytajDaneToolStripMenuItem.Name = "wszytajDaneToolStripMenuItem";
             this.wszytajDaneToolStripMenuItem.Size = new System.Drawing.Size(238, 26);
             this.wszytajDaneToolStripMenuItem.Text = "Wszytaj dane";
-            this.wszytajDaneToolStripMenuItem.Click += new System.EventHandler(this.WszytajDaneToolStripMenuItem_Click);
+            this.wszytajDaneToolStripMenuItem.Click += new System.EventHandler(this.LoadDataToolStripMenuItem_Click);
             // 
             // resetujToolStripMenuItem
             // 
             this.resetujToolStripMenuItem.Name = "resetujToolStripMenuItem";
             this.resetujToolStripMenuItem.Size = new System.Drawing.Size(238, 26);
             this.resetujToolStripMenuItem.Text = "Resetuj";
-            this.resetujToolStripMenuItem.Click += new System.EventHandler(this.ResetujToolStripMenuItem_Click);
+            this.resetujToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
             // 
             // zapiszListęZamówieńToolStripMenuItem
             // 
             this.zapiszListęZamówieńToolStripMenuItem.Name = "zapiszListęZamówieńToolStripMenuItem";
             this.zapiszListęZamówieńToolStripMenuItem.Size = new System.Drawing.Size(238, 26);
             this.zapiszListęZamówieńToolStripMenuItem.Text = "Zapisz listę zamówień";
-            this.zapiszListęZamówieńToolStripMenuItem.Click += new System.EventHandler(this.ZapiszListęZamówieńToolStripMenuItem_Click);
+            this.zapiszListęZamówieńToolStripMenuItem.Click += new System.EventHandler(this.SaveOrderListToolStripMenuItem_Click);
             // 
             // label1
             // 

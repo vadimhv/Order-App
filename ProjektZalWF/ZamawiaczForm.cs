@@ -20,10 +20,10 @@ namespace ProjektZalWF
 
         /* GLOBAL VARIABLES */
         readonly Repozytorium rep = new Repozytorium();
-        List<Kanapka> kanapki;
-        List<Napoj> napoji;
-        List<Deser> desery;
-        List<Dodatek> dodatki;
+        List<Kanapka> sandwitches;
+        List<Napoj> drinks;
+        List<Deser> desserts;
+        List<Dodatek> addons;
         Order order;
         readonly List<Order> orderList = new List<Order>();
         readonly List<Order> finishedOrderList = new List<Order>();
@@ -34,60 +34,86 @@ namespace ProjektZalWF
         double result = 0;
         int orderNumber = 0;
 
-        private void LoadData()
+        /* INITIALIZING DATA */
+        private void InitLists()
         {
-            kanapki = rep.PobierzKanapki();
-            napoji = rep.PobierzNapoj();
-            desery = rep.PobierzDesery();
-            dodatki = rep.PobierzDodatki();
+            sandwitches = rep.PobierzKanapki();
+            drinks = rep.PobierzNapoj();
+            desserts = rep.PobierzDesery();
+            addons = rep.PobierzDodatki();
         }
-        private void WszytajDaneToolStripMenuItem_Click(object sender, EventArgs e)
+
+        /* MENU */
+        private void ResetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            waitOrderListBox.Items.Clear();
+            finishedOrderListBox.Items.Clear();
+            managerScreen.Items.Clear();
+            ClearOrderFields();
+            ClearListBox();
+            waitTimer.Stop();
+        }
+        private void SaveOrderListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            StreamWriter writetext = new StreamWriter("OrderList.txt");
+            foreach (var item in managerScreen.Items)
+            {
+                writetext.WriteLine(item.ToString());
+            }
+            writetext.Close();
+        }
+        private void LoadDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SandwitchListBox.Items.Count == 0 && DrinkListBox.Items.Count == 0 && DessertListBox.Items.Count == 0 && AddonsListBox.Items.Count == 0)
             {
-                LoadData();
-                var kanapkiName = from n in kanapki
-                                  orderby n.Name descending
-                                  select new { n.Name };
-                foreach (var item in kanapkiName)
+                InitLists();
+                var sandwitchesNames = from n in sandwitches
+                                       orderby n.Name descending
+                                       select new { n.Name };
+                foreach (var item in sandwitchesNames)
                 {
                     SandwitchListBox.Items.Add(item.Name);
                 }
-                var napojiName = from n in napoji
-                                 orderby n.Name descending
-                                 select new { n.Name };
-                foreach (var item in napojiName)
+                var drinksNames = from n in drinks
+                                  orderby n.Name descending
+                                  select new { n.Name };
+                foreach (var item in drinksNames)
                 {
                     DrinkListBox.Items.Add(item.Name);
                 }
-                var deseryName = from n in desery
-                                 orderby n.Name descending
-                                 select new { n.Name };
-                foreach (var item in deseryName)
+                var dessertsNames = from n in desserts
+                                    orderby n.Name descending
+                                    select new { n.Name };
+                foreach (var item in dessertsNames)
                 {
                     DessertListBox.Items.Add(item.Name);
                 }
-                var dodatkiName = from n in dodatki
+                var addonsNames = from n in addons
                                   orderby n.Name descending
                                   select new { n.Name };
-                foreach (var item in dodatkiName)
+                foreach (var item in addonsNames)
                 {
                     AddonsListBox.Items.Add(item.Name);
                 }
-            } else
+            }
+            else
             {
                 MessageBox.Show("Dane już były wczytane", "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
+        /* LIST BOXES */
         private void SandwitchListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             string curItem;
             if (SandwitchListBox.SelectedIndex != -1)
             {
                 sandwitchRes = 0;
+
                 curItem = SandwitchListBox.SelectedItem.ToString();
+                var sandwitchData = sandwitches.Where(n => n.Name == curItem).ToList();
+
                 sandwitch_value.Text = curItem;
-                var sandwitchData = kanapki.Where(n => n.Name == curItem).ToList();
                 sandwitch_weight.Text = sandwitchData[0].Weight.ToString();
                 if (sandwitchData[0].Vege == 1)
                 {
@@ -97,6 +123,7 @@ namespace ProjektZalWF
                 {
                     sandwich_isVege.Text = "";
                 }
+
                 sandwitchRes = double.Parse(sandwitchData[0].Price.Replace(".", ","));
                 CalcResult();
             }
@@ -107,9 +134,11 @@ namespace ProjektZalWF
             if (DrinkListBox.SelectedIndex != -1)
             {
                 drinkRes = 0;
+
                 curItem = DrinkListBox.SelectedItem.ToString();
+                var drinkData = drinks.Where(n => n.Name == curItem).ToList();
+
                 drink_value.Text = curItem;
-                var drinkData = napoji.Where(n => n.Name == curItem).ToList();
                 drink_volume.Text = drinkData[0].Size.ToString();
                 if (drinkData[0].Sugar == 0)
                 {
@@ -119,6 +148,7 @@ namespace ProjektZalWF
                 {
                     drink_isSugarFree.Text = "";
                 }
+
                 drinkRes = double.Parse(drinkData[0].Price.Replace(".", ","));
                 CalcResult();
             }
@@ -129,14 +159,14 @@ namespace ProjektZalWF
             if (DessertListBox.SelectedIndex != -1)
             {
                 dessertRes = 0;
+
                 curItem = DessertListBox.SelectedItem.ToString();
+                var dessertData = desserts.Where(n => n.Name == curItem).ToList();
+
                 dessert_value.Text = curItem;
-
-                var dessertData = desery.Where(n => n.Name == curItem).ToList();
-
                 dessert_weight.Text = dessertData[0].Weight.ToString();
-
                 dessert_cal.Text = "Cal." + dessertData[0].Calories.ToString();
+
                 dessertRes = double.Parse(dessertData[0].Price.Replace(".", ","));
                 CalcResult();
             }
@@ -150,7 +180,7 @@ namespace ProjektZalWF
                 curItem = AddonsListBox.SelectedItem.ToString();
                 addons_value.Text = curItem;
 
-                var addonData = dodatki.Where(n => n.Name == curItem).ToList();
+                var addonData = addons.Where(n => n.Name == curItem).ToList();
 
                 addons_weight.Text = addonData[0].Volume.ToString();
 
@@ -166,11 +196,15 @@ namespace ProjektZalWF
                 CalcResult();
             }
         }
+
+        /* CALCULATING RESULT */
         private void CalcResult()
         {
             result = sandwitchRes + drinkRes + dessertRes + addonRes;
             summary_price.Text = result.ToString() + " zł";
         }
+
+        /* CLEARING */
         private void ClearOrderFields()
         {
             sandwitch_weight.Text = "";
@@ -197,8 +231,6 @@ namespace ProjektZalWF
             drinkRes = 0;
             dessertRes = 0;
             addonRes = 0;
-
-
         }
         private void ClearListBox()
         {
@@ -211,36 +243,9 @@ namespace ProjektZalWF
         {
             ClearOrderFields();   
         }
-        private void DoOrderComplete(Order orderToComplete)
-        {
-            RemoveOrderFromList(orderList, orderToComplete, waitOrderListBox);
 
-            finishedOrderList.Add(orderToComplete);
-            finishedOrderListBox.Items.Add(orderToComplete.OrderNumber);
-        }
-        private void RemoveOrderFromList(List<Order> orderList, Order order, ListBox listBox, int indexToRemove = 0)
-        {
-            orderList.Remove(order);
-            listBox.Items.RemoveAt(indexToRemove);
-        }
-        private void ShowInfoAboutCompleteOrder(Order completeOrder)
-        {
-            notifyIcon1.BalloonTipTitle = "Zamówienie #" + completeOrder.OrderNumber;
-            notifyIcon1.BalloonTipText = $"{completeOrder.OrderTime}\nCena: {completeOrder.OrderPrice} zł \n" +
-                $"{(completeOrder.Sandwitch.Name.Length != 0 ? completeOrder.Sandwitch.Name + ", " : null)}" +
-                $"{(completeOrder.Drink.Name.Length != 0 ? completeOrder.Drink.Name + ", " : null)}" +
-                $"{(completeOrder.Desert.Name.Length != 0 ? completeOrder.Desert.Name + ", " : null)}" +
-                $"{(completeOrder.Addon.Name.Length != 0 ? completeOrder.Addon.Name : null)}";
-            notifyIcon1.ShowBalloonTip(5000);
-        }
-        private void AddLogToManagerInfo(Order actualOrder)
-        {
-            managerScreen.Items.Add($"{actualOrder.OrderNumber} | {actualOrder.OrderTime} | {result} zł  | " +
-                    $"{(actualOrder.Sandwitch.Name.Length != 0 ? actualOrder.Sandwitch.Name + ", " : null)}" +
-                    $"{(actualOrder.Drink.Name.Length != 0 ? actualOrder.Drink.Name + ", " : null)}" +
-                    $"{(actualOrder.Desert.Name.Length != 0 ? actualOrder.Desert.Name + ", " : null)}" +
-                    $"{(actualOrder.Addon.Name.Length != 0 ? actualOrder.Addon.Name : null)}");
-        }
+
+        /* ORDER LISTS */
         private void OrderBtn_Click(object sender, EventArgs e)
         {
             Kanapka sand = new Kanapka
@@ -270,7 +275,7 @@ namespace ProjektZalWF
                 Addon = addon
             };
 
-            if(order.OrderPrice > 0)
+            if (order.OrderPrice > 0)
             {
                 orderList.Add(order);
 
@@ -285,23 +290,19 @@ namespace ProjektZalWF
                 ClearOrderFields();
 
                 waitTimer.Start();
-            } else
+            }
+            else
             {
                 MessageBox.Show("Nie wybrałeś elementu do zamówienia", "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
         }
-        private void WaitTimer_Tick(object sender, EventArgs e)
+        private void DoOrderComplete(Order orderToComplete)
         {
-            if (waitOrderListBox.Items.Count == 0)
-            {
-                waitTimer.Stop();
-            } else
-            {
-                var firstOrderItemInList = orderList.First();
-                DoOrderComplete(firstOrderItemInList);
-                ShowInfoAboutCompleteOrder(firstOrderItemInList);
-            }
+            RemoveOrderFromList(orderList, orderToComplete, waitOrderListBox);
+
+            finishedOrderList.Add(orderToComplete);
+            finishedOrderListBox.Items.Add(orderToComplete.OrderNumber);
         }
         private void TakeComplete_Click(object sender, EventArgs e)
         {
@@ -309,28 +310,11 @@ namespace ProjektZalWF
             {
                 var firstFinishedOrderInList = finishedOrderList.First();
                 RemoveOrderFromList(finishedOrderList, firstFinishedOrderInList, finishedOrderListBox);
-            } else
+            }
+            else
             {
                 MessageBox.Show("Aktualnie nie ma gotowych zamówień", "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-        }
-        private void ResetujToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            waitOrderListBox.Items.Clear();
-            finishedOrderListBox.Items.Clear();
-            managerScreen.Items.Clear();
-            ClearOrderFields();
-            ClearListBox();
-            waitTimer.Stop();
-        }
-        private void ZapiszListęZamówieńToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            StreamWriter writetext = new StreamWriter("OrderList.txt");
-            foreach(var item in managerScreen.Items)
-            {
-               writetext.WriteLine(item.ToString());
-            }
-            writetext.Close();
         }
         private void OrderFinishedWindow_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -339,6 +323,45 @@ namespace ProjektZalWF
             var item = finishedOrderListBox.SelectedIndex;
             finishedOrderListBox.Items.RemoveAt(item);
             finishedOrderList.RemoveAt(item);
-        } 
+        }
+        private void WaitTimer_Tick(object sender, EventArgs e)
+        {
+            if (waitOrderListBox.Items.Count == 0)
+            {
+                waitTimer.Stop();
+            }
+            else
+            {
+                var firstOrderItemInList = orderList.First();
+                DoOrderComplete(firstOrderItemInList);
+                ShowInfoAboutCompleteOrder(firstOrderItemInList);
+            }
+        }
+        private void RemoveOrderFromList(List<Order> orderList, Order order, ListBox listBox, int indexToRemove = 0)
+        {
+            orderList.Remove(order);
+            listBox.Items.RemoveAt(indexToRemove);
+        }
+
+        /* SHOWING INFO */
+        private void ShowInfoAboutCompleteOrder(Order completeOrder)
+        {
+            notifyIcon1.BalloonTipTitle = "Zamówienie #" + completeOrder.OrderNumber;
+            notifyIcon1.BalloonTipText = $"{completeOrder.OrderTime}\nCena: {completeOrder.OrderPrice} zł \n" +
+                $"{(completeOrder.Sandwitch.Name.Length != 0 ? completeOrder.Sandwitch.Name + ", " : null)}" +
+                $"{(completeOrder.Drink.Name.Length != 0 ? completeOrder.Drink.Name + ", " : null)}" +
+                $"{(completeOrder.Desert.Name.Length != 0 ? completeOrder.Desert.Name + ", " : null)}" +
+                $"{(completeOrder.Addon.Name.Length != 0 ? completeOrder.Addon.Name : null)}";
+            notifyIcon1.ShowBalloonTip(5000);
+        }
+        private void AddLogToManagerInfo(Order actualOrder)
+        {
+            managerScreen.Items.Add($"{actualOrder.OrderNumber} | {actualOrder.OrderTime} | {result} zł  | " +
+                    $"{(actualOrder.Sandwitch.Name.Length != 0 ? actualOrder.Sandwitch.Name + ", " : null)}" +
+                    $"{(actualOrder.Drink.Name.Length != 0 ? actualOrder.Drink.Name + ", " : null)}" +
+                    $"{(actualOrder.Desert.Name.Length != 0 ? actualOrder.Desert.Name + ", " : null)}" +
+                    $"{(actualOrder.Addon.Name.Length != 0 ? actualOrder.Addon.Name : null)}");
+        }
+
     }
 }
