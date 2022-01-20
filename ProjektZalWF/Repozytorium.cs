@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjektZaliczeniowy
+namespace ProjektZalWF
 {
     class Repozytorium
     {
@@ -165,7 +165,9 @@ namespace ProjektZaliczeniowy
                         {
                             Id = int.Parse(tab[0]),
                             Name = tab[1],
-                            Price = tab[3]
+                            Price = tab[3],
+                            Sauce = int.Parse(tab[4]),
+                            Volume = int.Parse(tab[2])
                         };
                         lista.Add(dodatek);
                     }

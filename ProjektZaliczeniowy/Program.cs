@@ -24,33 +24,13 @@ namespace ProjektZaliczeniowy
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine("----- Złóż zamówienie -----");
-            string kanapka;
-            do
-            {
-                Console.WriteLine("Wybierz kanapke: ");
-                kanapka = Console.ReadLine();
-            } while (int.Parse(kanapka) > listaKanapek.Count);
-            string napoj;
-            do
-            {
-                Console.WriteLine("Wybierz napój: ");
-                napoj = Console.ReadLine();
-            } while (int.Parse(napoj) > listaNapoji.Count);
-            string deser;
-            do
-            {
-                Console.WriteLine("Wybierz deser: ");
-                deser = Console.ReadLine();
-            } while (int.Parse(deser) > listaDeserow.Count);
-            string dodatek;
-            do
-            {
-                Console.WriteLine("Wybierz dodatek: ");
-                dodatek = Console.ReadLine();
-            } while (int.Parse(dodatek) > listaDodatkow.Count);
+
+            rep.GetOrderData(listaDeserow, listaKanapek, listaNapoji, listaDodatkow);
 
             Console.WriteLine();
-            rep.WyswietlWynik(kanapka, napoj, deser, dodatek);
+
+            rep.WyswietlWynik();
+
             Console.WriteLine();
         }
     }
